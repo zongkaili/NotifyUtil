@@ -41,22 +41,6 @@ public class NotifyUtil {
         // 获取系统服务来初始化对象
         nm = (NotificationManager) mContext.getSystemService(Activity.NOTIFICATION_SERVICE);
         cBuilder = new Notification.Builder(mContext);
-
-        if (Build.VERSION.SDK_INT >= 26) {
-            //当sdk版本大于26
-            String id = "channel_1";
-            String description = "name_notify_msg";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(id, description, importance);
-            channel.setDescription("1234");
-            channel.enableLights(true);
-            channel.enableVibration(true);
-            Uri sound = Settings.System.DEFAULT_NOTIFICATION_URI;
-            channel.setSound(sound, Notification.AUDIO_ATTRIBUTES_DEFAULT);
-            nm.createNotificationChannel(channel);
-            cBuilder = new Notification.Builder(mContext, id);
-            cBuilder.setCategory(Notification.CATEGORY_MESSAGE);
-        }
     }
 
     /**
@@ -74,6 +58,22 @@ public class NotifyUtil {
 //        // 将Intent封装进PendingIntent中，点击通知的消息后，就会启动对应的程序
 //        PendingIntent pIntent = PendingIntent.getActivity(mContext,
 //                requestCode, intent, FLAG);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //当sdk版本大于26
+            String id = "channel_1";
+            String description = "name_notify_msg";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(id, description, importance);
+            channel.setDescription("1234");
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            Uri soundUri = Settings.System.DEFAULT_NOTIFICATION_URI;
+            channel.setSound(soundUri, Notification.AUDIO_ATTRIBUTES_DEFAULT);
+            nm.createNotificationChannel(channel);
+            cBuilder = new Notification.Builder(mContext, id);
+            cBuilder.setCategory(Notification.CATEGORY_MESSAGE);
+        }
 
         cBuilder.setContentIntent(pendingIntent);// 该通知要启动的Intent
         cBuilder.setSmallIcon(smallIcon);// 设置顶部状态栏的小图标
