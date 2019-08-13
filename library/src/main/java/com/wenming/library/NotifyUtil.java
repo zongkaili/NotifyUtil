@@ -9,9 +9,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.SystemClock;
-import android.support.v7.app.NotificationCompat;
+import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -30,6 +33,8 @@ public class NotifyUtil {
     private Context mContext;
 
 
+    private NotificationCompat.Builder builder;
+
     public NotifyUtil(Context context, int ID) {
         this.NOTIFICATION_ID = ID;
         mContext = context;
@@ -40,11 +45,14 @@ public class NotifyUtil {
         if (Build.VERSION.SDK_INT >= 26) {
             //当sdk版本大于26
             String id = "channel_1";
-            String description = "143";
-            int importance = NotificationManager.IMPORTANCE_LOW;
+            String description = "name_notify_msg";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(id, description, importance);
+            channel.setDescription("1234");
             channel.enableLights(true);
             channel.enableVibration(true);
+            Uri sound = Settings.System.DEFAULT_NOTIFICATION_URI;
+            channel.setSound(sound, Notification.AUDIO_ATTRIBUTES_DEFAULT);
             nm.createNotificationChannel(channel);
             cBuilder = new Notification.Builder(mContext, id);
             cBuilder.setCategory(Notification.CATEGORY_MESSAGE);
@@ -74,7 +82,6 @@ public class NotifyUtil {
         cBuilder.setContentTitle(title);// 设置通知中心的标题
         cBuilder.setContentText(content);// 设置通知中心中的内容
         cBuilder.setWhen(System.currentTimeMillis());
-
         /*
          * 将AutoCancel设为true后，当你点击通知栏的notification后，它会自动被取消消失,
          * 不设置的话点击消息后也不清除，但可以滑动删除
@@ -105,7 +112,6 @@ public class NotifyUtil {
         if (lights) {
             defaults |= Notification.DEFAULT_LIGHTS;
         }
-
         cBuilder.setDefaults(defaults);
     }
 
