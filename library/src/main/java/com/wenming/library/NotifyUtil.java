@@ -200,9 +200,9 @@ public class NotifyUtil {
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), largeIcon);
         cBuilder.setLargeIcon(bitmap);
 
-        cBuilder.setDefaults(Notification.DEFAULT_ALL);// 设置使用默认的声音
+//        cBuilder.setDefaults(Notification.DEFAULT_ALL);// 设置使用默认的声音
         //cBuilder.setVibrate(new long[]{0, 100, 200, 300});// 设置自定义的振动
-        cBuilder.setAutoCancel(true);
+//        cBuilder.setAutoCancel(true);
         // builder.setSound(Uri.parse("file:///sdcard/click.mp3"));
 
         // 设置通知样式为收件箱样式,在通知中心中两指往外拉动，就能出线更多内容，但是很少见
