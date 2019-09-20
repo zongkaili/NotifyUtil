@@ -9,9 +9,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.SystemClock;
-import android.support.v7.app.NotificationCompat;
+import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -30,25 +33,14 @@ public class NotifyUtil {
     private Context mContext;
 
 
+    private NotificationCompat.Builder builder;
+
     public NotifyUtil(Context context, int ID) {
         this.NOTIFICATION_ID = ID;
         mContext = context;
         // 获取系统服务来初始化对象
         nm = (NotificationManager) mContext.getSystemService(Activity.NOTIFICATION_SERVICE);
         cBuilder = new Notification.Builder(mContext);
-
-        if (Build.VERSION.SDK_INT >= 26) {
-            //当sdk版本大于26
-            String id = "channel_1";
-            String description = "143";
-            int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel channel = new NotificationChannel(id, description, importance);
-            channel.enableLights(true);
-            channel.enableVibration(true);
-            nm.createNotificationChannel(channel);
-            cBuilder = new Notification.Builder(mContext, id);
-            cBuilder.setCategory(Notification.CATEGORY_MESSAGE);
-        }
     }
 
     /**
@@ -67,6 +59,22 @@ public class NotifyUtil {
 //        PendingIntent pIntent = PendingIntent.getActivity(mContext,
 //                requestCode, intent, FLAG);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //当sdk版本大于26
+            String id = "channel_1";
+            String description = "name_notify_msg";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(id, description, importance);
+            channel.setDescription("1234");
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            Uri soundUri = Settings.System.DEFAULT_NOTIFICATION_URI;
+            channel.setSound(soundUri, Notification.AUDIO_ATTRIBUTES_DEFAULT);
+            nm.createNotificationChannel(channel);
+            cBuilder = new Notification.Builder(mContext, id);
+            cBuilder.setCategory(Notification.CATEGORY_MESSAGE);
+        }
+
         cBuilder.setContentIntent(pendingIntent);// 该通知要启动的Intent
         cBuilder.setSmallIcon(smallIcon);// 设置顶部状态栏的小图标
         cBuilder.setTicker(ticker);// 在顶部状态栏中的提示信息
@@ -74,7 +82,6 @@ public class NotifyUtil {
         cBuilder.setContentTitle(title);// 设置通知中心的标题
         cBuilder.setContentText(content);// 设置通知中心中的内容
         cBuilder.setWhen(System.currentTimeMillis());
-
         /*
          * 将AutoCancel设为true后，当你点击通知栏的notification后，它会自动被取消消失,
          * 不设置的话点击消息后也不清除，但可以滑动删除
@@ -105,7 +112,6 @@ public class NotifyUtil {
         if (lights) {
             defaults |= Notification.DEFAULT_LIGHTS;
         }
-
         cBuilder.setDefaults(defaults);
     }
 
@@ -194,9 +200,9 @@ public class NotifyUtil {
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), largeIcon);
         cBuilder.setLargeIcon(bitmap);
 
-        cBuilder.setDefaults(Notification.DEFAULT_ALL);// 设置使用默认的声音
+//        cBuilder.setDefaults(Notification.DEFAULT_ALL);// 设置使用默认的声音
         //cBuilder.setVibrate(new long[]{0, 100, 200, 300});// 设置自定义的振动
-        cBuilder.setAutoCancel(true);
+//        cBuilder.setAutoCancel(true);
         // builder.setSound(Uri.parse("file:///sdcard/click.mp3"));
 
         // 设置通知样式为收件箱样式,在通知中心中两指往外拉动，就能出线更多内容，但是很少见
